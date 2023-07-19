@@ -10,8 +10,7 @@ RUN pacman -S --noconfirm \
   curl \
   git \
   jdk-openjdk \
-  jq \
-  rust
+  jq
 
 # AUR package builder user
 
@@ -28,16 +27,25 @@ RUN makepkg -si --noconfirm
 
 # AUR packages
 USER builder
-RUN paru -S --noconfirm latestpaper-bin papermc
+RUN paru -S --noconfirm latestpaper-bin
 
 # Minecraft server setup
 
+USER root
+RUN useradd -md /srv/papermc papermc
 USER papermc
 WORKDIR /srv/papermc
 
 # Initial setup
 
-RUN latestpaper -o /srv/papermc/papermc_latest.jar
+ADD --chown=papermc:papermc \
+  entrypoint.sh \
+  latest-paper.sh \
+  ops.json \
+  whitelist.json \
+  /srv/papermc/
+
+RUN ./latest-paper.sh
 
 # Fetchr setup
 
@@ -55,7 +63,6 @@ RUN echo 'whitelist=true' >> server.properties
 RUN echo 'server-port=25566' >> server.properties
 RUN echo 'enforce-secure-profile=false' >> server.properties
 
-ADD ops.json whitelist.json /srv/papermc/
+# Running papermc
 
-ADD entrypoint.sh /srv/papermc/
 CMD /srv/papermc/entrypoint.sh
