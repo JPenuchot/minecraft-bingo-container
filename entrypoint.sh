@@ -23,4 +23,6 @@ java \
   -XX:MaxTenuringThreshold=1 \
   -Dusing.aikars.flags=https://mcflags.emc.gs \
   -Daikars.new.flags=true \
+  -Dorg.apache.log4j.Level=WARN \
+  -Dpapermc.log-level=WARN \
   -jar ./papermc_latest.jar nogui
